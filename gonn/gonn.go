@@ -127,6 +127,8 @@ func (self * NeuralNetwork) CalcError( target []float64) float64{
 }
 
 func (self * NeuralNetwork) Train(inputs [][]float64, targets [][]float64, iteration int) {
+	old_err1 := 1.0
+	old_err2 := 2.0
 	for i:=0;i<iteration;i++{
 		for j:=0;j<len(inputs);j++{
 			self.Forward(inputs[j])
@@ -134,7 +136,14 @@ func (self * NeuralNetwork) Train(inputs [][]float64, targets [][]float64, itera
 		}
 		if i%100==0 {
 			last_target := targets[len(targets)-1]
-			fmt.Println("err: ", self.CalcError(last_target))
+			cur_err := self.CalcError(last_target)
+			fmt.Println("err: ", cur_err)
+			if (old_err2 - old_err1 < 0.001) && (old_err1 - cur_err  < 0.001){//early stop
+				break
+			}	
+			old_err2 = old_err1
+			old_err1 = cur_err
+			
 		}
 	}
 }
