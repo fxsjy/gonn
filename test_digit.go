@@ -18,6 +18,9 @@ func R(F int) []float64{
 	return []float64{float64(F)}
 }
 
+func round(X float64) int {
+	return int(X+0.5)
+}
 
 func main(){
 
@@ -68,7 +71,7 @@ func main(){
 	inputs = append(inputs,Q([]int{2,5,8,1}))
 	
 	for _, p := range inputs {
-		fmt.Println(int(network.Forward(p)[0]))
+		fmt.Println(round(network.Forward(p)[0]))
 	}
 
 	network.Stop()
