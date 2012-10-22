@@ -148,6 +148,19 @@ func (self * NeuralNetwork) CalcError( target []float64) float64{
 	return errSum
 }
 
+func genRandomIdx(N int) []int{
+	A := make([]int,N)
+	for i:=0;i<N;i++{
+		A[i]=i
+	}
+	//randomize
+	for i:=0;i<N;i++{
+		j := i+int(rand.Float64() * float64 (N-i))
+		A[i],A[j] = A[j],A[i]
+	}
+	return A
+}
+
 func (self * NeuralNetwork) Train(inputs [][]float64, targets [][]float64, iteration int) {
 	if len(inputs[0])+1 != len(self.mInputLayer){
 		panic("amount of input variable doesn't match")
@@ -157,16 +170,18 @@ func (self * NeuralNetwork) Train(inputs [][]float64, targets [][]float64, itera
 	}
 	old_err1 := 1.0
 	old_err2 := 2.0
+	
 	for i:=0;i<iteration;i++{
+		idx_ary := genRandomIdx(len(inputs))
 		for j:=0;j<len(inputs);j++{
-			self.Forward(inputs[j])
-			self.Feedback(targets[j])
+			self.Forward(inputs[idx_ary[j]])
+			self.Feedback(targets[idx_ary[j]])
 		}
 		if i%100==0 {
 			last_target := targets[len(targets)-1]
 			cur_err := self.CalcError(last_target)
 			fmt.Println("err: ", cur_err)
-			if (old_err2 - old_err1 < 0.0001) && (old_err1 - cur_err  < 0.0001){//early stop
+			if (old_err2 - old_err1 < 0.001) && (old_err1 - cur_err  < 0.001){//early stop
 				break
 			}	
 			old_err2 = old_err1
