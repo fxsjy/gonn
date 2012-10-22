@@ -71,6 +71,7 @@ func main(){
 		fmt.Println(int(network.Forward(p)[0]))
 	}
 
+	network.Stop()
 	fmt.Println("")
 }
 

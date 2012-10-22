@@ -92,7 +92,29 @@ func (self * NeuralNetwork) Start(){//start all the neurals in the network
 	}
 }
 
+func (self * NeuralNetwork) Stop(){//start all the neurals in the network
+
+	for _,n := range self.mInputLayer{
+		close(n.mInputChan)
+		close(n.mFeedbackChan)
+	}
+	for _,n := range self.mHiddenLayer{
+		close(n.mInputChan)
+		close(n.mFeedbackChan)
+	}
+	for _,n := range self.mOutputLayer{
+		close(n.mInputChan)
+		close(n.mFeedbackChan)
+	}
+	close(self.mForwardDone)
+	close(self.mFeedbackDone)
+}
+
+
 func (self * NeuralNetwork) Forward(input []float64 ) (output []float64){
+	if len(input)+1 != len(self.mInputLayer){
+		panic("amount of input variable doesn't match")
+	}
 	go func(){
 		for i:=0;i<len(self.mInputLayer)-1;i++{
 			self.mInputLayer[i].mInputChan <- input[i]
@@ -127,6 +149,12 @@ func (self * NeuralNetwork) CalcError( target []float64) float64{
 }
 
 func (self * NeuralNetwork) Train(inputs [][]float64, targets [][]float64, iteration int) {
+	if len(inputs[0])+1 != len(self.mInputLayer){
+		panic("amount of input variable doesn't match")
+	}
+	if len(targets[0]) != len(self.mOutputLayer){
+		panic("amount of output variable doesn't match")
+	}
 	old_err1 := 1.0
 	old_err2 := 2.0
 	for i:=0;i<iteration;i++{
@@ -138,7 +166,7 @@ func (self * NeuralNetwork) Train(inputs [][]float64, targets [][]float64, itera
 			last_target := targets[len(targets)-1]
 			cur_err := self.CalcError(last_target)
 			fmt.Println("err: ", cur_err)
-			if (old_err2 - old_err1 < 0.001) && (old_err1 - cur_err  < 0.001){//early stop
+			if (old_err2 - old_err1 < 0.0001) && (old_err1 - cur_err  < 0.0001){//early stop
 				break
 			}	
 			old_err2 = old_err1
@@ -182,6 +210,7 @@ func dsigmoid(Y float64) float64{
 
 func (self *Neural) start(regression bool){
 	go func(){//forward loop
+		defer func(){recover()} ()
 		for {
 			sum := 0.0
 			for i:=0;i<self.mInputCount;i++{
@@ -210,6 +239,7 @@ func (self *Neural) start(regression bool){
 	}()
 
 	go func(){//feedback loop
+		defer func(){recover()} ()
 		for{
 			if self.mLayer==0{ //input layer
 				return
