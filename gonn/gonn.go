@@ -54,7 +54,7 @@ func randomMatrix(rows,colums int, lower, upper float64) [][]float64{
 }
 
 func DefaultNetwork(iInputCount,iHiddenCount,iOutputCount int, iRegression bool) (*NeuralNetwork) {
-	return NewNetwork(iInputCount,iHiddenCount,iOutputCount,iRegression, 0.25,0.001)
+	return NewNetwork(iInputCount,iHiddenCount,iOutputCount,iRegression, 0.25,0.1)
 }
 
 
@@ -141,26 +141,22 @@ func (self * NeuralNetwork) Feedback(target []float64) {
 			}else{
 				delta = self.mErrOutput[i] * dsigmoid(self.mOutputLayer[i])
 			}
-			if j<len(self.mHiddenLayer)-1{
+			
 				change = self.mRate1* delta * self.mHiddenLayer[j] + self.mRate2* self.mLastChangeOutput[j][i]
 				self.mWeightOutput[j][i] -= change
 				self.mLastChangeOutput[j][i] = change 
-			}else{
-				self.mWeightOutput[j][i] -= self.mRate1*delta
-			}
+			
 		}
 	}
 
 	for i:=0;i<len(self.mHiddenLayer)-1;i++{
 		for j:=0;j<len(self.mInputLayer);j++{
 			delta := self.mErrHidden[i] * dsigmoid(self.mHiddenLayer[i])
-			if j<len(self.mInputLayer)-1{
+			
 				change := self.mRate1*delta*self.mInputLayer[j] + self.mRate2*self.mLastChangeHidden[j][i]
 				self.mWeightHidden[j][i] -= change
 				self.mLastChangeHidden[j][i] = change
-			}else{
-				self.mWeightHidden[j][i] -= self.mRate1*delta
-			}
+			
 		}
 	}
 }
