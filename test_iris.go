@@ -6,7 +6,9 @@ import (
 	"strings"
 	"strconv"
 	"os"
+
 	"time"
+
 	//"math"
 	"./gonn"
 )
@@ -25,6 +27,7 @@ func argmax(A []float64) int{
 
 
 func main(){
+
 	start := time.Now()
 	f,_ := os.Open("iris2.data")
 	content,_ := ioutil.ReadAll(f)
@@ -35,7 +38,9 @@ func main(){
 	inputs := make([][]float64,0)
 	targets := make([][]float64,0)
 	for _,line := range lines{
+
 		line = strings.TrimRight(line,"\r\n")
+
 		if len(line)==0{
 			continue
 		}
@@ -88,5 +93,7 @@ func main(){
 		}
 	}
 	fmt.Println("success rate:",1.0 - err_count/float64(len(test_inputs)))
+
 	fmt.Println(time.Since(start))
+
 }
