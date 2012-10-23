@@ -30,6 +30,7 @@ func main(){
 
 	start := time.Now()
 	f,_ := os.Open("iris2.data")
+	defer f.Close()
 	content,_ := ioutil.ReadAll(f)
 	s_content := string(content)
 	lines := strings.Split(s_content,"\n")
