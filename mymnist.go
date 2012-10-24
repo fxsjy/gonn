@@ -124,7 +124,7 @@ func main () {
     //fmt.Println(targets[:10])
 
     nn := gonn.NewNetwork(784,100,10,false,0.25,0.1)
-    nn.Train(inputs,targets,20) //20 iterations
+    nn.Train(inputs,targets,17) //20 iterations
 
     var testLabelData []byte
     var testImageData [][]byte
