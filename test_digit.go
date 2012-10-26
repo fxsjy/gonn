@@ -24,7 +24,7 @@ func round(X float64) int {
 
 func main(){
 
-	network := gonn.DefaultNetwork(10,10,1,true)
+	network := gonn.NewNetwork(10,10,1,true,0.01,0.001)
 
 	inputs := make([][]float64,0)
 	inputs = append(inputs,Q([]int{7,1,1,1}))
