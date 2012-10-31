@@ -41,7 +41,7 @@ func LoadRBF(fileName string) *RBFNetwork{
 	decoder := json.NewDecoder(in_f)
 	nn := &RBFNetwork{}
 	decoder.Decode(nn)
-	fmt.Println(nn)
+	//fmt.Println(nn)
 	return nn
 }
 

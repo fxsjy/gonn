@@ -40,7 +40,7 @@ func LoadPCN(fileName string) *PCNNetwork{
 	decoder := json.NewDecoder(in_f)
 	nn := &PCNNetwork{}
 	decoder.Decode(nn)
-	fmt.Println(nn)
+	//fmt.Println(nn)
 	return nn
 }
 

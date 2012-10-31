@@ -51,7 +51,7 @@ func LoadNN(fileName string) *NeuralNetwork{
 	decoder := json.NewDecoder(in_f)
 	nn := &NeuralNetwork{}
 	decoder.Decode(nn)
-	fmt.Println(nn)
+	//fmt.Println(nn)
 	return nn
 }
 
