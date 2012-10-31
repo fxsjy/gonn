@@ -4,8 +4,14 @@ Neural Network in GoLang
 
 Feature
 =======
-* BackPropagation Network (Traditional Version)
+* BackPropagation Network / RBF Network / Perceptron Network
 * Parallel BackPropagation Network (each neural has its own go-routine)
+
+Benchmark
+=======
+* Dataset: MNIST Acurrency Rate : 98.2% (800 hidden nodes)
+* Actually, you can get 96.9% using 100 hidden nodes in just three minutes of trainning
+
 
 TODO
 =======
