@@ -26,5 +26,6 @@ func main(){
 		x := []float64{ float64(i) / 23.0 }
 		fmt.Fprintln(out_f,x[0], nn.Forward(x)[0])
 	}
+
 }
 

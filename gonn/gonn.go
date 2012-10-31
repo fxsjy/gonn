@@ -199,12 +199,115 @@ func (self *NeuralNetwork) Train(inputs [][]float64, targets [][]float64, iterat
 					fmt.Println("")
 					iter_flag = i
 				}
-				fmt.Printf("iteration %v / progress %.2f %% \r", i+1, float64(j)*100/float64(len(inputs)))
+				fmt.Printf("iteration %vth / progress %.2f %% \r", i+1, float64(j)*100/float64(len(inputs)))
 			}
 		}
 		if (iteration >= 10 && (i+1)%(iteration/10) == 0) || iteration < 10 {
-			fmt.Printf("\niteration %v err: %.5f", i+1, cur_err)
+			fmt.Printf("\niteration %vth MSE: %.5f", i+1, cur_err / float64(len(inputs)))
 		}
 	}
 	fmt.Println("\ndone.")
+}
+
+func (self *NeuralNetwork) TrainMap(inputs []map[int]float64, targets [][]float64, iteration int) {
+	if len(targets[0]) != len(self.mOutputLayer) {
+		panic("amount of output variable doesn't match")
+	}
+
+	iter_flag := -1
+	for i := 0; i < iteration; i++ {
+		idx_ary := genRandomIdx(len(inputs))
+		cur_err := 0.0
+		for j := 0; j < len(inputs); j++ {
+			self.ForwardMap(inputs[idx_ary[j]])
+			self.FeedbackMap(targets[idx_ary[j]],inputs[idx_ary[j]] )
+			cur_err += self.CalcError(targets[idx_ary[j]])
+			if (j+1)%1000 == 0 {
+				if iter_flag != i {
+					fmt.Println("")
+					iter_flag = i
+				}
+				fmt.Printf("iteration %vth / progress %.2f %% \r", i+1, float64(j)*100/float64(len(inputs)))
+			}
+		}
+		if (iteration >= 10 && (i+1)%(iteration/10) == 0) || iteration < 10 {
+			fmt.Printf("\niteration %vth MSE: %.5f", i+1, cur_err / float64(len(inputs)))
+		}
+	}
+	fmt.Println("\ndone.")
+}
+
+
+func (self *NeuralNetwork) ForwardMap(input map[int]float64) (output []float64) {
+	for k,v := range input {
+		self.mInputLayer[k] = v
+	}
+	self.mInputLayer[len(self.mInputLayer)-1] = 1.0 //bias node for input layer
+
+	for i := 0; i < len(self.mHiddenLayer)-1; i++ {
+		sum := 0.0
+		for j,_ := range input{
+			sum += self.mInputLayer[j] * self.mWeightHidden[i][j]
+		}
+		self.mHiddenLayer[i] = sigmoid(sum)
+	}
+
+	self.mHiddenLayer[len(self.mHiddenLayer)-1] = 1.0 //bias node for hidden layer
+	for i := 0; i < len(self.mOutputLayer); i++ {
+		sum := 0.0
+		for j := 0; j < len(self.mHiddenLayer); j++ {
+			sum += self.mHiddenLayer[j] * self.mWeightOutput[i][j]
+		}
+		if self.mRegression {
+			self.mOutputLayer[i] = sum
+		} else {
+			self.mOutputLayer[i] = sigmoid(sum)
+		}
+	}
+	return self.mOutputLayer[:]
+}
+
+func (self *NeuralNetwork) FeedbackMap(target []float64,input map[int]float64) {
+	for i := 0; i < len(self.mOutputLayer); i++ {
+		self.mErrOutput[i] = self.mOutputLayer[i] - target[i]
+	}
+
+	for i := 0; i < len(self.mHiddenLayer)-1; i++ {
+		err := 0.0
+		for j := 0; j < len(self.mOutputLayer); j++ {
+			if self.mRegression {
+				err += self.mErrOutput[j] * self.mWeightOutput[j][i]
+			} else {
+				err += self.mErrOutput[j] * self.mWeightOutput[j][i] * dsigmoid(self.mOutputLayer[j])
+			}
+
+		}
+		self.mErrHidden[i] = err
+	}
+
+	for i := 0; i < len(self.mOutputLayer); i++ {
+		for j := 0; j < len(self.mHiddenLayer); j++ {
+			change := 0.0
+			delta := 0.0
+			if self.mRegression {
+				delta = self.mErrOutput[i]
+			} else {
+				delta = self.mErrOutput[i] * dsigmoid(self.mOutputLayer[i])
+			}
+			change = self.mRate1*delta*self.mHiddenLayer[j] + self.mRate2*self.mLastChangeOutput[i][j]
+			self.mWeightOutput[i][j] -= change
+			self.mLastChangeOutput[i][j] = change
+
+		}
+	}
+
+	for i := 0; i < len(self.mHiddenLayer)-1; i++ {
+		for j , _ := range input {
+			delta := self.mErrHidden[i] * dsigmoid(self.mHiddenLayer[i])
+			change := self.mRate1*delta*self.mInputLayer[j] + self.mRate2*self.mLastChangeHidden[i][j]
+			self.mWeightHidden[i][j] -= change
+			self.mLastChangeHidden[i][j] = change
+
+		}
+	}
 }
