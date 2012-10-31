@@ -83,6 +83,12 @@ func main(){
 
 	//fmt.Println(train_inputs,train_targets)
 	nn.Train(train_inputs,train_targets,1000)
+
+	gonn.DumpNN("iris.nn",nn)
+	nn = nil
+
+	nn = gonn.LoadNN("iris.nn")
+
 	err_count := 0.0
 	for i:=0;i<len(test_inputs);i++{
 		output := nn.Forward(test_inputs[i])
