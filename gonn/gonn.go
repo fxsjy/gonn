@@ -33,13 +33,16 @@ func dsigmoid(Y float64) float64 {
 }
 
 func DumpNN(fileName string, nn *NeuralNetwork){
-	out_f, err := os.OpenFile(fileName,os.O_CREATE,777)
+	out_f, err := os.OpenFile(fileName,os.O_CREATE | os.O_RDWR,0777)
 	if err!=nil{
 		panic("failed to dump the network to " + fileName)
 	}
 	defer out_f.Close()
 	encoder := json.NewEncoder(out_f)
-	encoder.Encode(nn)
+	err = encoder.Encode(nn)
+	if err!=nil{
+		panic(err)
+	}
 }
 
 func LoadNN(fileName string) *NeuralNetwork{
@@ -50,7 +53,10 @@ func LoadNN(fileName string) *NeuralNetwork{
 	defer in_f.Close()
 	decoder := json.NewDecoder(in_f)
 	nn := &NeuralNetwork{}
-	decoder.Decode(nn)
+	err = decoder.Decode(nn)
+	if err!=nil{
+		panic(err)
+	}
 	//fmt.Println(nn)
 	return nn
 }

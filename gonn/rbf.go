@@ -23,7 +23,7 @@ type RBFNetwork struct{
 
 
 func DumpRBF(fileName string, nn *RBFNetwork){
-	out_f, err := os.OpenFile(fileName,os.O_CREATE,777)
+	out_f, err := os.OpenFile(fileName,os.O_CREATE | os.O_RDWR,0777)
 	if err!=nil{
 		panic("failed to dump the network to " + fileName)
 	}
