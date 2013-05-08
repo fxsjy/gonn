@@ -8,7 +8,7 @@ import (
 )
 
 func main(){
-	out_f,_ := os.OpenFile("sin.out",os.O_CREATE,777)
+	out_f,_ := os.OpenFile("sin.out",os.O_CREATE | os.O_RDWR,0777)
 	defer out_f.Close()
 
 	nn := gonn.DefaultNetwork(1,10,1,true)

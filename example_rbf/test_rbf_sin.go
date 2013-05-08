@@ -8,19 +8,19 @@ import (
 )
 
 func main(){
-	out_f,_ := os.OpenFile("sin.out",os.O_CREATE,777)
+	out_f,_ := os.OpenFile("sin.out",os.O_CREATE | os.O_RDWR,0777)
 	defer out_f.Close()
 
-	nn := gonn.DefaultRBFNetwork(1,1,10,true)
-	train_inputs := make([][]float64,100)
-	train_targets := make([][]float64,100)
+	nn := gonn.DefaultRBFNetwork(1,1,100,true)
+	train_inputs := make([][]float64,1000)
+	train_targets := make([][]float64,1000)
 
 	for i:=0;i<len(train_inputs);i++{
 		train_inputs[i] = []float64{ float64(i) / 20.0 }
 		train_targets[i] = []float64{  math.Sin(train_inputs[i][0] ) }
 	}
 
-	nn.Train(train_inputs,train_targets,1000)
+	nn.Train(train_inputs,train_targets,4000)
 
 	for i:=0;i<len(train_inputs);i++{
 		x := []float64{ float64(i) / 23.0 }
