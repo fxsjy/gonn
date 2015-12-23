@@ -1,4 +1,4 @@
-GoNN
+GoNN [![GoDoc](https://godoc.org/github.com/fxsjy/gonn/gonn?status.svg)](https://godoc.org/github.com/fxsjy/gonn/gonn)
 ========
 Neural Network in GoLang
 
